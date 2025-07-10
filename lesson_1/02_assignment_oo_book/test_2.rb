@@ -1,15 +1,17 @@
-class Animal
-  def initialize
-    puts "I'm in Animal."
+class MyCar
+  attr_accessor :color
+  attr_reader :year, :model
+
+  def initialize(year, color, model)
+    @year = year
+    @color = color
+    @model = model
+  end
+
+  def to_s
+    puts "My car is a(n) #{color} #{year} #{model}."
   end
 end
 
-class Bear < Animal
-  def initialize(colour)
-    super()
-    @colour = colour
-  end
-end
-
-bear = Bear.new("black")
-# => #<Bear:0x007fb40b1e6718 @colour="black">
+silver_bullet = MyCar.new(1984, "silver", "Subaru")
+puts silver_bullet
