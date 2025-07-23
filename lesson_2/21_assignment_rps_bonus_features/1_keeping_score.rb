@@ -1,8 +1,9 @@
 class Player
-  attr_accessor :move, :name
+  attr_accessor :move, :name, :points
 
   def initialize
     set_name
+    @points = 0
   end
 end
 
@@ -80,7 +81,9 @@ end
 
 # Game Orchestration Engine
 class RPSGame
-  attr_accessor :human, :computer
+  POINTS_TO_WIN = 10
+
+  attr_accessor :human, :computer, :round_winner
 
   def initialize
     @human = Human.new
@@ -89,6 +92,7 @@ class RPSGame
 
   def display_welcome_message
     puts "Welcome to Rock, Paper, Scissors!"
+    puts "Win #{POINTS_TO_WIN} points to be the GRAND WINNER!"
   end
 
   def display_moves
@@ -96,13 +100,47 @@ class RPSGame
     puts "#{computer.name} chose #{computer.move}"
   end
 
-  def display_winner
-    if human.move > computer.move
-      puts "#{human.name} won!"
-    elsif human.move < computer.move
-      puts "#{computer.name} won!"
+  def determine_round_winner
+    @round_winner = (if human.move > computer.move
+                       human
+                     elsif human.move < computer.move
+                       computer
+                     end)
+  end
+
+  def display_round_winner(round_winner)
+    case round_winner
+    when human
+      puts "#{human.name} won this round!"
+    when computer
+      puts "#{computer.name} won this round!"
     else
       puts "It's a tie!"
+    end
+  end
+
+  def tally_scores(round_winner)
+    if round_winner == human
+      human.points += 1
+    elsif round_winner == computer
+      computer.points += 1
+    end
+  end
+
+  def display_scores
+    puts "#{human.name}'s score: #{human.points}"
+    puts "#{computer.name}'s score: #{computer.points}"
+  end
+
+  def reached_winning_points?
+    human.points == POINTS_TO_WIN || computer.points == POINTS_TO_WIN
+  end
+
+  def display_grand_winner
+    if human.points == POINTS_TO_WIN
+      puts "#{human.name} is the GRAND WINNER! Woohoo! Congrats!"
+    else
+      puts "#{computer.name} is the GRAND WINNER."
     end
   end
 
@@ -118,19 +156,35 @@ class RPSGame
     answer.downcase == 'y'
   end
 
+  def reset_points
+    human.points = 0
+    computer.points = 0
+  end
+
   def display_goodbye_message
     puts "Thanks for playing Rock, Paper, Scissors. Good bye!"
+  end
+
+  def a_single_round
+    human.choose
+    computer.choose
+    display_moves
+    determine_round_winner
+    display_round_winner(@round_winner)
+    tally_scores(@round_winner)
+    display_scores
   end
 
   def play
     display_welcome_message
 
     loop do
-      human.choose
-      computer.choose
-      display_moves
-      display_winner
-      break unless play_again?
+      a_single_round
+      if reached_winning_points?
+        display_grand_winner
+        break unless play_again?
+        reset_points
+      end
     end
 
     display_goodbye_message
