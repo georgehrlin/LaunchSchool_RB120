@@ -1,5 +1,4 @@
 # Expanded upon 1_keeping_score.rb
-
 class Player
   attr_accessor :move, :name, :points
 

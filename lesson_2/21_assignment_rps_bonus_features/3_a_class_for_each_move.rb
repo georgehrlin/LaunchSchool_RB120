@@ -1,5 +1,4 @@
 # Modified from 2_lizard_n_spock.rb
-
 class Player
   attr_accessor :move, :name, :points
 

@@ -1,6 +1,4 @@
 # Expanded upon 4_history_of_moves.rb
-require 'pry'
-
 class Player
   attr_accessor :move, :name, :points
 
@@ -80,7 +78,7 @@ class Chappie < Computer
 
   # Plays the game properly. Chooses a move at random
   def choose(_)
-    self.move = Move::VALUES.sample
+    self.move = Move.new(Move::VALUES.sample)
   end
 end
 
