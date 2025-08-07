@@ -89,9 +89,11 @@ end
 
 class Player
   attr_reader :marker
+  attr_accessor :score
 
   def initialize(marker)
     @marker = marker
+    @score = 0
   end
 end
 
@@ -107,6 +109,7 @@ class Array
 end
 
 class TTTGame
+  SCORE_TO_WIN = 5
   HUMAN_MARKER = "X"
   COMPUTER_MARKER = "O"
   FIRST_TO_MOVE = HUMAN_MARKER
@@ -131,17 +134,37 @@ class TTTGame
 
   def main_game
     loop do
-      display_board
-      player_move
-      display_result
+      single_set_of_rounds
       break unless play_again?
+      reset_player_scores
       reset
       display_play_again_message
     end
   end
 
+  def single_set_of_rounds
+    loop do
+      single_round
+      update_player_scores
+      display_player_scores
+      prompt_player_to_continue
+      if grand_winner?
+        display_grand_winner
+        break
+      end
+      reset
+    end
+  end
+
+  def single_round
+    display_board
+    player_move
+    display_result
+  end
+
   def display_welcome_message
     puts "Welcome to Tic Tac Toe!"
+    puts "Win #{SCORE_TO_WIN} games to be the winner!"
     puts ""
   end
 
@@ -204,11 +227,37 @@ class TTTGame
 
     case board.winning_marker
     when human.marker
-      puts "You won!"
+      puts "You won this round!"
     when computer.marker
-      puts "Computer won!"
+      puts "Computer won this round."
     else
       puts "It's a tie!"
+    end
+  end
+
+  def update_player_scores
+    case board.winning_marker
+    when human.marker
+      human.score += 1
+    when computer.marker
+      computer.score += 1
+    end
+  end
+
+  def display_player_scores
+    puts "You: #{human.score} vs. Computer: #{computer.score}"
+  end
+
+  def grand_winner?
+    human.score == SCORE_TO_WIN || computer.score == SCORE_TO_WIN
+  end
+
+  def display_grand_winner
+    clear
+    if human.score == SCORE_TO_WIN
+      puts "YOU ARE THE WINNER! ୧(๑•̀ヮ•́)૭ LET'S GO!!!"
+    else
+      puts 'Computer is the winner.'
     end
   end
 
@@ -232,6 +281,16 @@ class TTTGame
     board.reset
     @current_marker = FIRST_TO_MOVE
     clear
+  end
+
+  def prompt_player_to_continue
+    puts "Press Enter to continue."
+    gets
+  end
+
+  def reset_player_scores
+    human.score = 0
+    computer.score = 0
   end
 
   def display_play_again_message
