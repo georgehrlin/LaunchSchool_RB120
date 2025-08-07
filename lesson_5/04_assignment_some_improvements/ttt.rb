@@ -1,5 +1,3 @@
-require 'pry'
-
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
@@ -42,18 +40,10 @@ class Board
     !!winning_marker
   end
 
-  # returns winning marker or nil
-  # Official Solution
   def winning_marker
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
-      if three_identical_markers?(squares)
-        begin
-          return squares.first.marker
-        rescue
-          binding.pry
-        end
-      end
+      return squares.first.marker if three_identical_markers?(squares)
     end
     nil
   end
