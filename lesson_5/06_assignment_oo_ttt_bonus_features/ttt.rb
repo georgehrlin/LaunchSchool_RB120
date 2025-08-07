@@ -1,3 +1,5 @@
+require 'pry'
+
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
@@ -56,12 +58,34 @@ class Board
   # rubocop:enable Metrics/AbcSize
   # rubocop:enable Metrics/MethodLength
 
+  def immediate_win?
+    WINNING_LINES.each do |line|
+      squares = @squares.values_at(*line)
+      return true if two_identical_markers_and_one_unmarked?(squares)
+    end
+    false
+  end
+
+  def at_risk_square
+    WINNING_LINES.each do |line|
+      squares = @squares.values_at(*line)
+      if two_identical_markers_and_one_unmarked?(squares)
+        line.each { |key| return key if @squares[key].unmarked? }
+      end
+    end
+  end
+
   private
 
   def three_identical_markers?(squares)
     markers = squares.select(&:marked?).collect(&:marker)
     return false if markers.size != 3
     markers.min == markers.max
+  end
+
+  def two_identical_markers_and_one_unmarked?(squares)
+    markers = squares.map(&:marker)
+    markers.uniq.size == 2 && squares.count(&:unmarked?) == 1
   end
 end
 
@@ -209,7 +233,11 @@ class TTTGame
   end
 
   def computer_moves
-    board[board.unmarked_keys.sample] = computer.marker
+    if board.immediate_win? 
+      board[board.at_risk_square] = computer.marker # Computer defends
+    else
+      board[board.unmarked_keys.sample] = computer.marker
+    end
   end
 
   def current_player_moves
