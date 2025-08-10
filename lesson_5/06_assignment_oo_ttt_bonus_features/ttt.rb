@@ -23,10 +23,10 @@ class Board
   end
 
   def someone_won?
-    !!winning_marker
+    !!round_winning_marker
   end
 
-  def winning_marker
+  def round_winning_marker
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
       if three_identical_markers?(squares)
@@ -59,23 +59,44 @@ class Board
   # rubocop:enable Metrics/MethodLength
 
   def immediate_win?
-    WINNING_LINES.each do |line|
-      squares = @squares.values_at(*line)
-      return true if two_identical_markers_and_one_unmarked?(squares)
-    end
-    false
+   find_winning_lines.size > 0
   end
 
   def at_risk_square
-    WINNING_LINES.each do |line|
-      squares = @squares.values_at(*line)
-      if two_identical_markers_and_one_unmarked?(squares)
-        line.each { |key| return key if @squares[key].unmarked? }
+    winning_lines = find_winning_lines
+
+    if winning_lines.size > 1
+      idx = nil
+      winning_markers = winning_lines_to_markers(winning_lines)
+
+      if winning_markers.any? do |markers|
+         markers.include?(TTTGame::COMPUTER_MARKER)
       end
+        idx = winning_markers.index do |markers|
+          markers.include?(TTTGame::COMPUTER_MARKER)
+        end
+        winning_lines[idx].each { |k| return k if @squares[k].unmarked? }
+      else
+        idx = (winning_lines.map.with_index { |_, i| i }).sample
+        winning_lines[idx].each { |k| return k if @squares[k].unmarked? }
+      end
+
+    else
+        winning_lines.first.each { |k| return k if @squares[k].unmarked? }
     end
   end
 
   private
+
+  def find_winning_lines
+    winning_lines = []
+    WINNING_LINES.each do |line|
+      squares = @squares.values_at(*line)
+      winning_lines << line if two_identical_markers_and_one_unmarked?(squares)
+    end
+
+    winning_lines
+  end
 
   def three_identical_markers?(squares)
     markers = squares.select(&:marked?).collect(&:marker)
@@ -86,6 +107,12 @@ class Board
   def two_identical_markers_and_one_unmarked?(squares)
     markers = squares.map(&:marker)
     markers.uniq.size == 2 && squares.count(&:unmarked?) == 1
+  end
+
+  def winning_lines_to_markers(winning_lines)
+    winning_lines.map do |winning_line|
+      @squares.values_at(*winning_line).map(&:marker)
+    end
   end
 end
 
@@ -133,7 +160,7 @@ class Array
 end
 
 class TTTGame
-  SCORE_TO_WIN = 5
+  SCORE_TO_WIN = 2
   HUMAN_MARKER = "X"
   COMPUTER_MARKER = "O"
   FIRST_TO_MOVE = HUMAN_MARKER
@@ -233,8 +260,8 @@ class TTTGame
   end
 
   def computer_moves
-    if board.immediate_win? 
-      board[board.at_risk_square] = computer.marker # Computer defends
+    if board.immediate_win?
+      board[board.at_risk_square] = computer.marker
     else
       board[board.unmarked_keys.sample] = computer.marker
     end
@@ -253,7 +280,7 @@ class TTTGame
   def display_result
     clear_screen_and_display_board
 
-    case board.winning_marker
+    case board.round_winning_marker
     when human.marker
       puts "You won this round!"
     when computer.marker
@@ -264,7 +291,7 @@ class TTTGame
   end
 
   def update_player_scores
-    case board.winning_marker
+    case board.round_winning_marker
     when human.marker
       human.score += 1
     when computer.marker
