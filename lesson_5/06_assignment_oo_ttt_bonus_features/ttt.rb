@@ -10,6 +10,10 @@ class Board
     reset
   end
 
+  def [](num)
+    @squares[num]
+  end
+
   def []=(num, marker)
     @squares[num].marker = marker
   end
@@ -59,7 +63,7 @@ class Board
   # rubocop:enable Metrics/MethodLength
 
   def immediate_win?
-   find_winning_lines.size > 0
+    !find_winning_lines.empty?
   end
 
   def at_risk_square
@@ -70,7 +74,7 @@ class Board
       winning_markers = winning_lines_to_markers(winning_lines)
 
       if winning_markers.any? do |markers|
-         markers.include?(TTTGame::COMPUTER_MARKER)
+        markers.include?(TTTGame::COMPUTER_MARKER)
       end
         idx = winning_markers.index do |markers|
           markers.include?(TTTGame::COMPUTER_MARKER)
@@ -82,7 +86,7 @@ class Board
       end
 
     else
-        winning_lines.first.each { |k| return k if @squares[k].unmarked? }
+         winning_lines.first.each { |k| return k if @squares[k].unmarked? }
     end
   end
 
@@ -171,7 +175,8 @@ class TTTGame
     @board = Board.new
     @human = Player.new(HUMAN_MARKER)
     @computer = Player.new(COMPUTER_MARKER)
-    @current_marker = FIRST_TO_MOVE
+    @current_marker = nil
+    @first_to_move = FIRST_TO_MOVE
   end
 
   def play
@@ -194,6 +199,7 @@ class TTTGame
   end
 
   def single_set_of_rounds
+    first_go_selection
     loop do
       single_round
       update_player_scores
@@ -211,6 +217,14 @@ class TTTGame
     display_board
     player_move
     display_result
+  end
+
+  def first_go_selection
+    if select_go_first?
+      select_go_first
+    else
+      set_default_go_first
+    end
   end
 
   def display_welcome_message
@@ -232,6 +246,41 @@ class TTTGame
     @current_marker == HUMAN_MARKER
   end
 
+  def select_go_first?
+    puts "Would you like to select who goes first?"
+    puts "Enter y for yes, or n for no. (And press Enter.)"
+    decision = nil
+    loop do
+      decision = gets.chomp.downcase
+      break if %w(y n).include?(decision)
+      puts "Sorry, input must be y or n."
+    end
+
+    decision == 'y'
+  end
+
+  def select_go_first
+    puts "Enter 1: you go first, or 2: computer goes first. (And press Enter.)"
+    go_first = nil
+
+    loop do
+      go_first = gets.chomp
+      break if %w(1 2).include?(go_first)
+      "Sorry, input must be 1 or 2."
+    end
+
+    case go_first
+    when '1' then @first_to_move = HUMAN_MARKER
+    when '2' then @first_to_move = COMPUTER_MARKER
+    end
+
+    @current_marker = @first_to_move
+  end
+
+  def set_default_go_first
+    @current_marker = @first_to_move
+  end
+
   def display_board
     puts "You're a #{human.marker}. Computer is a #{computer.marker}."
     puts ""
@@ -244,6 +293,16 @@ class TTTGame
       current_player_moves
       break if board.someone_won? || board.full?
       clear_screen_and_display_board if human_turn?
+    end
+  end
+
+  def current_player_moves
+    if human_turn?
+      human_moves
+      @current_marker = COMPUTER_MARKER
+    else
+      computer_moves
+      @current_marker = HUMAN_MARKER
     end
   end
 
@@ -262,18 +321,10 @@ class TTTGame
   def computer_moves
     if board.immediate_win?
       board[board.at_risk_square] = computer.marker
+    elsif board[5].unmarked?
+      board[5] = computer.marker
     else
       board[board.unmarked_keys.sample] = computer.marker
-    end
-  end
-
-  def current_player_moves
-    if human_turn?
-      human_moves
-      @current_marker = COMPUTER_MARKER
-    else
-      computer_moves
-      @current_marker = HUMAN_MARKER
     end
   end
 
@@ -322,7 +373,7 @@ class TTTGame
       puts "Would you like to play again? (y/n)"
       answer = gets.chomp.downcase
       break if %w(y n).include? answer
-      puts "Sorry, must be y or n"
+      puts "Sorry, input must be y or n"
     end
 
     answer == 'y'
@@ -334,7 +385,7 @@ class TTTGame
 
   def reset
     board.reset
-    @current_marker = FIRST_TO_MOVE
+    @current_marker = @first_to_move
     clear
   end
 
