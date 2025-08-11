@@ -22,6 +22,10 @@ class Board
     @squares.keys.select { |key| @squares[key].unmarked? }
   end
 
+  def empty?
+    unmarked_keys.size == 9
+  end
+
   def full?
     unmarked_keys.empty?
   end
@@ -199,7 +203,8 @@ class TTTGame
   end
 
   def single_set_of_rounds
-    first_go_selection
+    first_to_move_selection
+    display_game_start_message
     loop do
       single_round
       update_player_scores
@@ -214,16 +219,27 @@ class TTTGame
   end
 
   def single_round
-    display_board
+    clear
+    display_board if @first_to_move == HUMAN_MARKER
     player_move
     display_result
   end
 
-  def first_go_selection
-    if select_go_first?
-      select_go_first
+  def display_game_start_message
+    puts "Game is starting... Get ready!"
+    sleep(2)
+  end
+
+  def first_to_move_selection
+    if select_first_to_move?
+      select_first_to_move
     else
-      set_default_go_first
+      set_random_first_to_move
+    end
+
+    case @first_to_move
+    when HUMAN_MARKER then puts "You are going first!"
+    when COMPUTER_MARKER then puts "Computer is going first!"
     end
   end
 
@@ -246,10 +262,12 @@ class TTTGame
     @current_marker == HUMAN_MARKER
   end
 
-  def select_go_first?
-    puts "Would you like to select who goes first?"
-    puts "Enter y for yes, or n for no. (And press Enter.)"
+  def select_first_to_move?
+    puts "Would you like to choose who goes first?"
+    puts "(If not, computer will choose.)"
+    puts "Enter: y for yes, or n for no. (And press Enter.)"
     decision = nil
+
     loop do
       decision = gets.chomp.downcase
       break if %w(y n).include?(decision)
@@ -259,17 +277,17 @@ class TTTGame
     decision == 'y'
   end
 
-  def select_go_first
+  def select_first_to_move
     puts "Enter 1: you go first, or 2: computer goes first. (And press Enter.)"
-    go_first = nil
+    answer = nil
 
     loop do
-      go_first = gets.chomp
-      break if %w(1 2).include?(go_first)
-      "Sorry, input must be 1 or 2."
+      answer = gets.chomp
+      break if %w(1 2).include?(answer)
+      puts "Sorry, input must be 1 or 2."
     end
 
-    case go_first
+    case answer
     when '1' then @first_to_move = HUMAN_MARKER
     when '2' then @first_to_move = COMPUTER_MARKER
     end
@@ -277,7 +295,8 @@ class TTTGame
     @current_marker = @first_to_move
   end
 
-  def set_default_go_first
+  def set_random_first_to_move
+    @first_to_move = [HUMAN_MARKER, COMPUTER_MARKER].sample
     @current_marker = @first_to_move
   end
 
@@ -321,7 +340,9 @@ class TTTGame
   def computer_moves
     if board.immediate_win?
       board[board.at_risk_square] = computer.marker
-    elsif board[5].unmarked?
+    elsif board[5].unmarked? && !board.empty?
+      # Computer immediately picks 5 only if the square is not empty
+      # Otherwise it's too boring if computer always picks 5 when starting
       board[5] = computer.marker
     else
       board[board.unmarked_keys.sample] = computer.marker
