@@ -1,0 +1,24 @@
+name_question: "What's your name?"
+name_error: "You have to call yourself something, silly!"
+
+choose_square: "Choose a square:"
+square_error: "Option not included."
+
+welcome: "Welcome to Tic_Tac_Toe!"
+goodbye: "Thanks for playing!"
+
+name_reaction: "Good to meet you %s! You are playing against %s!"
+
+rules_question: "Do you want to see the rules? Y / N"
+rules: "Enter a number to pick a square. First to 3 squares in a row wins the round."
+
+human_won: "You won!"
+comp_won: "Oh no! %s won!"
+tie: "Uh-oh. You tied!"
+
+human_grand_winner: "Congratulations %s! You are the champion of the world--erm, game!"
+comp_grand_winner: "Ruh-Roh! looks like %s is better at this game than you. Tough break!"
+
+play_again_question: "Do you want to play again? Y / N"
+yes_no_error: "Error"
+enter: "Press Enter to continue."

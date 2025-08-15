@@ -22,18 +22,6 @@ class Board
     @squares[num].marker = marker
   end
 
-  def unmarked_keys
-    @squares.keys.select { |key| @squares[key].unmarked? }
-  end
-
-  def empty?
-    unmarked_keys.size == @squares.size
-  end
-
-  def full?
-    unmarked_keys.empty?
-  end
-
   # rubocop:disable Metrics/AbcSize
   # rubocop:disable Metrics/MethodLength
   def draw
@@ -51,6 +39,18 @@ class Board
   end
   # rubocop:enable Metrics/AbcSize
   # rubocop:enable Metrics/MethodLength
+
+  def unmarked_keys
+    @squares.keys.select { |key| @squares[key].unmarked? }
+  end
+
+  def empty?
+    unmarked_keys.size == @squares.size
+  end
+
+  def full?
+    unmarked_keys.empty?
+  end
 
   def someone_won?
     !!round_winning_marker
@@ -82,6 +82,8 @@ class Board
       square_num_of_unmarked(winning_lines.first)
     end
   end
+
+  private
 
   def all_winning_lines
     result = []
@@ -130,27 +132,78 @@ class Square
     marker
   end
 
-  def unmarked?
-    marker == INITIAL_MARKER
-  end
-
   def marked?
     !unmarked?
+  end
+
+  def unmarked?
+    marker == INITIAL_MARKER
   end
 end
 
 class Player
-  attr_reader :marker
+  attr_reader :marker, :name
   attr_accessor :score
 
-  def initialize(marker)
+  def initialize(name=nil, marker=nil)
+    @name = name
     @marker = marker
-    @score = 0 # RB110 TTT Bonus Features 2
+    @score = 0
+  end
+end
+
+class Human < Player
+  def customize_name
+    puts "What's your name?"
+    puts '(Enter a name and press Enter.)'
+    @name = prompt_player_name
+    puts "Hi, #{@name}!"
+    sleep(1.2)
+    puts
+  end
+
+  def customize_marker
+    puts 'Enter any single character to customize your marker for the game!'
+    puts '(Enter one character and press Enter.)'
+    puts '(If nothing is entered, your marker will default to X.)'
+    custom_marker = prompt_player_marker
+    @marker = custom_marker.empty? ? 'X' : custom_marker
+    puts "Your marker is #{@marker}."
+    puts
+    sleep(1.2)
+  end
+
+  private
+
+  def prompt_player_name
+    loop do
+      name = gets.chomp
+      return name if !name.empty?
+      puts 'Sorry, please enter a name. (And press Enter.)'
+    end
+  end
+
+  def prompt_player_marker
+    loop do
+      custom_marker = gets.chomp
+      return custom_marker if custom_marker.size <= 1
+      puts 'Sorry. Your custom marker can only contain one character.'
+    end
+  end
+end
+
+class Computer < Player
+  NAMES = ['R2D2', 'WALL-E', 'Chappie']
+  MARKERS = { 'R2D2' => 'Ɔ', 'WALL-E' => 'Џ', 'Chappie' => 'ш' }
+
+  def initialize
+    name = NAMES.sample
+    super(name, MARKERS[name])
   end
 end
 
 class Array
-  def joinor(separator=',', last_separator='or') # RB110 TTT Bonus Features 1
+  def joinor(separator=',', last_separator='or')
     if size <= 2
       join(" #{last_separator} ")
     else
@@ -170,8 +223,8 @@ class TTTGame
 
   def initialize
     @board = Board.new
-    @human = Player.new(HUMAN_MARKER)
-    @computer = Player.new(COMPUTER_MARKER)
+    @human = Human.new
+    @computer = Computer.new
     @first_to_move = FIRST_TO_MOVE
     @current_marker = nil
   end
@@ -179,9 +232,13 @@ class TTTGame
   def play
     clear
     display_welcome_message
+    initialize_player_human
+    display_computer_info
     main_game
     display_goodbye_message
   end
+
+  private
 
   def main_game
     loop do
@@ -196,6 +253,7 @@ class TTTGame
     end
   end
 
+  # rubocop:disable Metrics/MethodLength
   def single_set_of_rounds
     loop do
       single_round
@@ -209,6 +267,7 @@ class TTTGame
       reset
     end
   end
+  # rubocop:enable Metrics/MethodLength
 
   def single_round
     clear
@@ -221,11 +280,22 @@ class TTTGame
     system 'clear'
   end
 
+  def initialize_player_human
+    human.customize_name
+    human.customize_marker
+  end
+
+  def display_computer_info
+    puts "Your opponent is: #{computer.name}."
+    puts
+    sleep(1.2)
+  end
+
   def display_welcome_message
     puts 'Welcome to Tic Tac Toe!'
     puts "Win #{SCORE_TO_WIN} games to be the winner!"
     puts ''
-    sleep(1)
+    sleep(1.2)
   end
 
   def select_first_to_move
@@ -286,11 +356,13 @@ class TTTGame
     when COMPUTER_MARKER
       puts 'Computer is going first!'
     end
+    puts
+    sleep(1.2)
   end
 
   def display_set_start_message
     puts "Game is starting..."
-    sleep(1)
+    sleep(1.2)
     puts "Get ready!"
     sleep(1.5)
   end
@@ -400,6 +472,8 @@ class TTTGame
     else
       puts 'Computer is the winner... (ಥ﹏ಥ)'
     end
+    sleep(1.2)
+    puts
   end
 
   def play_again?
@@ -430,6 +504,7 @@ class TTTGame
   def display_play_again_message
     puts "Let's play again!"
     puts
+    sleep(1.2)
   end
 
   def display_goodbye_message
