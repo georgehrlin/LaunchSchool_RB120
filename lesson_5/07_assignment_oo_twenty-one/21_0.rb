@@ -85,9 +85,6 @@ class Card
   end
 
   def value
-    if @rank == 'ace'
-    end
-
     if ('2'..'10').include?(@rank)
       @rank.to_i
     elsif ace?
@@ -131,7 +128,7 @@ class Participant
   def update_total
     num_aces = number_of_aces
     sum_without_ace = @cards.sum { |card| card.ace? ? 0 : card.value }
-    sum = sum_without_ace + Game::ACE_VALUE_MAX * num_aces
+    sum = sum_without_ace + (Game::ACE_VALUE_MAX * num_aces)
 
     aces_as_11 = num_aces
     aces_as_1 = 0
@@ -139,21 +136,14 @@ class Participant
     until aces_as_1 == num_aces || sum <= Game::ACE_VALUE_DETERMINANT
       sum = sum - Game::ACE_VALUE_MAX + Game::ACE_VALUE_MIN
       aces_as_11 -= 1
-      aces_as_1 += 1
+      aces_as_1  += 1
     end
 
     self.total = sum
   end
 
-  # def collect_all_aces!
-  #   aces = []
-  #   each do |card|
-  #     (aces << delete(card)) if card.rank == 'ace'
-  #   end
-  # end
-
   def number_of_aces
-    cards.select { |card| card.ace? }.size
+    cards.select(&:ace?).size
   end
 
   def busted?
@@ -248,7 +238,7 @@ class Game
 
   def deal_initial_cards
     NUM_INITIAL_CARDS.times do
-      player.cards << deck.deck.shift 
+      player.cards << deck.deck.shift
       dealer.cards << deck.deck.shift
     end
   end
