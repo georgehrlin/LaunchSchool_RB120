@@ -1,0 +1,27 @@
+welcome: 'Welcome to Twenty-One!'
+rounds_to_win: 'Win %s rounds to be the grand winner!'
+rules: ''
+display_player_initial_cards: 'Your starting cards are: %s.'
+display_player_total: 'Your total is: %s'
+display_dealer_initial_cards: "Dealer's starting cards are: %s, (hidden card)."
+display_dealer_total: "Dealer's total is: %s"
+hit_or_stay: "Would you like to hit or stay? (Enter h: hit or s: stay, and press Enter. )"
+invalid_choice_hs: 'Sorry, please enter h: hit or s: stay.'
+display_card_dealt: 'Card dealt: %s'
+dealer_turn_begins: "Dealer's turn begins."
+display_dealer_cards: "Dealer's cards: %s."
+dealer_hits: 'Dealer hits!'
+dealer_stays: 'Dealer stays!'
+player_busted: 'You are busted!'
+dealer_busted: 'Dealer is busted!'
+display_both_totals: 'Your total: %s vs. Dealer total: %s'
+round_winner_player: 'You won this round!'
+round_winner_dealer: 'Dealer won this round!'
+round_tie: "It's a tie."
+press_enter: 'Press Enter to continue.'
+display_scores: "Current Score | You: %s vs. Dealer: %s"
+grand_winner_player: "You are the grand winner! ୧(๑•̀ヮ•́)૭ CONGRATULATIONS!!!"
+grand_winner_dealer: "Computer is the grand winner... (ಥ﹏ಥ)"
+play_again: "Would you like to play another set of rounds? (Enter y: yes or n: no, and press Enter. )"
+invalid_choice_yn: 'Sorry, please enter y: yes or n: no.'
+goodbye: 'Thank you for playing 21. Goodbye!'
