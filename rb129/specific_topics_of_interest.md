@@ -1,0 +1,15 @@
+# Specific Topics of Interest
+- Classes and objects
+- States and behaviour
+- Instance variables, class variables, and constants
+  - Including the scope of each type and how inheritance can affect that scope
+- Different ways to create and call getter and setter methods
+- Instance methods versus class methods
+- Method access control
+- Class inheritance, encapsulation, and polymorphism
+- Modules and their use cases
+- Method lookup path
+- Method overriding
+- `self`
+- Fake operators and equality
+- Collaborator objects

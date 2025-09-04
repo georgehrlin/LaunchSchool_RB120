@@ -185,7 +185,7 @@ class Game
   ACE_VALUE_DETERMINANT = 21
   DEALER_STAY_MINIMUM = 17
   NUM_INITIAL_CARDS = 2
-  ROUNDS_TO_WIN = 1
+  ROUNDS_TO_WIN = 3
 
   attr_accessor :deck, :player, :dealer
 
