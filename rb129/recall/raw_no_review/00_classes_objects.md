@@ -1,10 +1,12 @@
 # Classes
-Objects are at the centre of OOP. Classes are like "blueprints" of objects. A class typically defines the attributes and behaviours of its objects.
+Objects are at the centre of OOP. Classes are like blueprints of objects. A class typically defines the attributes and behaviours of its objects.
 
 A class can be created with the `class` keyword, followed by the class name.
 
 ```ruby
-class MyClass; end
+class MyClass
+  # Omitted code
+end
 ```
 
 Any class in Ruby is itself an object/instance of the `Class` class.

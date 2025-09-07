@@ -1,18 +1,25 @@
-module Namespace1
-  module MyModule
-    def do_something
-      puts "I'm: #{self}!"
+class Wallet
+  include Comparable
+
+  attr_reader :balance
+
+  def initialize(balance)
+    @balance = balance
+  end
+
+  def <=>(other)
+    if balance < other.balance
+      -1
+    elsif balance > other.balance
+      1
+    elsif balance == other.balance
+      0
     end
-  end
-
-  class MyClass1
-    include MyModule
-  end
-
-  class MyClass2
-    include MyModule
   end
 end
 
-Namespace1::MyClass1.new.do_something
-Namespace1::MyClass2.new.do_something
+wallet1 = Wallet.new(100)
+wallet2 = Wallet.new(50)
+
+p wallet1 > wallet2 # => true
+p wallet1 < wallet2 # => false
