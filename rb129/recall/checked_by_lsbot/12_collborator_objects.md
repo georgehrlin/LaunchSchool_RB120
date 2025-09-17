@@ -35,9 +35,9 @@ p pc.gpu # => #<GPU:0x0000000102c41870 @brand="Asus", @model="ROG Astral OC RTX 
 # cpu and gpu are collaborator objects of pc
 ```
 
-The code above illustrates **aggregation**, which refers to a kind of relationship between a container object and its collaborator object(s). In aggregation, the life span of the collaborator object(s) is not tied up with the container object.
+The code above illustrates **aggregation**, which refers to a kind of relationship between a container object and its collaborator object(s). In aggregation, the life span of the collaborator object(s) is not tied to the container object.
 
-Another relationship is composition, where a collaborator object is instantiated by the constructor of the container object. Here, the existence of the container object and collaborator object are tied together. **The container object is responsible for the lifecycle of the collaborator object.
+Another relationship is composition, where a collaborator object is instantiated by the constructor of the container object. Here, the existence of the container object and collaborator object are tied together. **The container object is responsible for the lifecycle of the collaborator object.**
 
 Both aggregation and composition model a "has-a" relationship.
 

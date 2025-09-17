@@ -16,7 +16,7 @@ p obj1 # => #<MyClass:0x0000000107002550 @attribute1="some data", @attribute2="s
 ```
 
 # Behaviour
-In OOP, behaviour typically refers to what an instance/object of a class can do. A class lays out the behaviour of its objects by defining instance methods. An object can then be the receiver of such instance methods and carry out actions ultimately defined by the programmer. The set of behaviours of a class is also knwon as the interface of the class.
+In OOP, behaviour typically refers to what an instance/object of a class can do. A class lays out the behaviour of its objects by defining instance methods. An object can then be the receiver of such instance methods and carry out actions ultimately defined by the programmer. The set of public instance methods of a class is also knwon as the interface ("public API") of the class.
 
 ```ruby
 class MyClass
